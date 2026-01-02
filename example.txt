@@ -1,0 +1,13 @@
+Reviewers: Sarah Jenkins (Q-PAR) Additional Reviewers: Michael Chen (Tech Lead) Approver: Dr. Elena Rodriguez (Head of Finance)
+
+
+Current Situation: The Accounts Payable team currently manually extracts data from PDF invoices received via email and types the details into the SAP ERP system.
+High manual data entry error rate (approx. 12%) requiring significant rework. Slow processing turnaround time averaging 4 business days per invoice, leading to vendor complaints.
+Business Impact: The department incurs approximately $15,000 annually in late payment penalties and $40,000 in staff overtime costs due to process inefficiencies.
+
+Goal: Implement an OCR (Optical Character Recognition) automation tool to reduce manual data entry for standard vendor invoices. KPI: Average Invoice Processing Time (Current: 30 minutes -> Target: 5 minutes) Target Date: 15/10/2026
+
+
+Risk 1: The selected OCR software may have low accuracy rates with low-resolution scanned documents. Mitigation 1: Limit the initial scope to "digital-native" PDFs only and implement a "Human-in-the-Loop" review step for any document with a confidence score below 85%.
+
+Risk 2: Integration with the legacy ERP system may be blocked by internal firewall rules. Mitigation 2: Engage the IT Security team during the design phase (Week 1) to define allow-lists and conduct a connectivity Proof of Concept before full implementation.
