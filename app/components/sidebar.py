@@ -8,14 +8,37 @@ from data.template_registry import get_available_templates
 
 
 def render_sidebar():
-    """
-    Renders the sidebar with:
-    1. Template Selection (New Document)
-    2. Document Health Dashboard (TOC with Status Indicators)
-    3. Global Actions (Clear)
-    """
     with st.sidebar:
         st.markdown("## 🗂️ Project Workspace")
+
+        with st.expander("⚙️ OpenAI Settings", expanded=True):
+            st.caption("Enter your details to enable AI features.")
+
+            st.text_input(
+                "API Key",
+                type="password",
+                key="user_api_key",
+                help="Your OpenAI API Key",
+            )
+            st.text_input(
+                "Base URL",
+                key="user_base_url",
+                placeholder="https://your-resource.openai.com/openai/deployments/gpt-4/",
+                help="The full endpoint URL",
+            )
+            st.text_input(
+                "Deployment Name",
+                key="user_deployment_name",
+                placeholder="gpt-4",
+                help="The name of your model deployment",
+            )
+
+            if st.session_state.get("user_api_key"):
+                st.success("Credentials set!")
+            else:
+                st.warning("Please enter credentials.")
+
+        st.divider()
 
         # --- TAB 1: CREATE NEW ---
         with st.expander("📄 New Document", expanded=False):
@@ -25,7 +48,6 @@ def render_sidebar():
             if st.button(
                 "Create from Template", type="primary", use_container_width=True
             ):
-                # Warning if work exists
                 if get_sections():
                     st.warning("This will overwrite your current work.")
 
@@ -43,7 +65,6 @@ def render_sidebar():
         else:
             st.markdown("### 📊 Document Health")
 
-            # Progress Bar logic
             total = len(sections)
             compliant_count = sum(
                 1 for s in sections if s["user_data"]["status"] == "compliant"
@@ -52,7 +73,6 @@ def render_sidebar():
 
             st.progress(progress, text=f"Readiness: {int(progress * 100)}%")
 
-            # Table of Contents with Status Icons
             st.markdown("---")
             st.caption("Navigation & Status")
 
@@ -60,17 +80,13 @@ def render_sidebar():
                 status = section["user_data"]["status"]
                 title = section["meta"]["title"]
 
-                # Icon Logic
                 if status == "compliant":
                     icon = "🟢"
                 elif status == "flagged":
                     icon = "🔴"
                 else:
-                    icon = "⚪"  # Draft
+                    icon = "⚪"
 
-                # We use a markdown link or simple text.
-                # Note: Streamlit native anchor linking is limited, so we visually display it.
-                # In a more advanced app, clicking this could set a 'focused_section' state.
                 st.markdown(f"{icon} **{title}**")
 
         st.divider()
