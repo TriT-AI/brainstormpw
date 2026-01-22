@@ -12,24 +12,40 @@ def render_sidebar():
         st.markdown("## 🗂️ Project Workspace")
 
         with st.expander("⚙️ OpenAI Settings", expanded=True):
-            st.caption("Enter your standard OpenAI API Key.")
+            # Check if system key is available (loaded from secrets)
+            has_system_key = "system_api_key" in st.session_state
 
-            st.text_input(
+            if has_system_key:
+                st.success("✅ System Credentials Loaded")
+                key_placeholder = "Using loaded system key..."
+                key_help = "A system key is loaded securely. Type here to override it with your own."
+            else:
+                st.caption("Enter your standard OpenAI API Key.")
+                key_placeholder = "sk-..."
+                key_help = "Your sk-... API Key"
+
+            # 1. API KEY INPUT (Empty by default if system key exists)
+            user_key = st.text_input(
                 "API Key",
                 type="password",
                 key="user_api_key",
-                help="Your sk-... API Key",
+                placeholder=key_placeholder,
+                help=key_help,
             )
+
+            # 2. MODEL NAME INPUT
+            # Default to system model or gpt-4o
+            default_model = st.session_state.get("system_model_name", "gpt-4o")
 
             st.text_input(
                 "Model Name",
                 key="user_model_name",
-                value="gpt-4o",
+                value=default_model,
                 placeholder="gpt-4o, gpt-4-turbo, etc.",
                 help="The model to use (e.g., gpt-4o)",
             )
 
-            # Made optional
+            # 3. BASE URL (Optional)
             st.text_input(
                 "Base URL (Optional)",
                 key="user_base_url",
@@ -37,8 +53,10 @@ def render_sidebar():
                 help="Only required if using a proxy.",
             )
 
-            if st.session_state.get("user_api_key"):
-                st.success("Credentials set!")
+            # VALIDATION FEEDBACK
+            if user_key or has_system_key:
+                # If either user input OR system key is present, we are good
+                pass
             else:
                 st.warning("Please enter API Key.")
 

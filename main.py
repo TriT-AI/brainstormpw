@@ -51,14 +51,14 @@ def check_password():
 # --- 3. HELPER: LOAD SECRETS ---
 def load_secrets_if_available():
     """
-    Checks .streamlit/secrets.toml for OpenAI credentials and pre-fills session state.
-    This allows the Sidebar to pick them up automatically as default values.
+    Checks .streamlit/secrets.toml for OpenAI credentials.
+    Stores them in 'system_*' keys to avoid exposing them in the UI text inputs.
     """
-    # Mapping: Secrets Key -> Session State Key (used by Sidebar & LLM Factory)
+    # Mapping: Secrets Key -> Session State Key (Hidden System Keys)
     mapping = {
-        "OPENAI_API_KEY": "user_api_key",
-        "OPENAI_MODEL_NAME": "user_model_name",
-        "OPENAI_BASE_URL": "user_base_url",
+        "OPENAI_API_KEY": "system_api_key",
+        "OPENAI_MODEL_NAME": "system_model_name",
+        "OPENAI_BASE_URL": "system_base_url",
     }
 
     for secret_key, state_key in mapping.items():
