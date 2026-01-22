@@ -124,3 +124,38 @@ def fixer_node(state: AgentState):
     except Exception as e:
         print(f"❌ Fixer Error: {e}")
         return {"user_content": content}
+
+
+def consistency_node(full_document_content: str):
+    """
+    Checks for logical inconsistencies across the entire document.
+    """
+    print(f"--- 🧠 Checking Logic Consistency ---")
+
+    # 1. CHECK CREDENTIALS
+    llm = get_user_llm()
+    if not llm:
+        return {"is_consistent": False, "global_issues": []}
+
+    # 2. IMPORT PROMPT
+    from backend.prompts import CONSISTENCY_SYSTEM_PROMPT
+    from backend.models import ConsistencyResponse
+
+    # 3. CALL LLM
+    system_msg = CONSISTENCY_SYSTEM_PROMPT.format(
+        full_document_content=full_document_content
+    )
+
+    try:
+        structured_llm = llm.with_structured_output(ConsistencyResponse)
+        response = structured_llm.invoke(
+            [
+                SystemMessage(content=system_msg),
+                HumanMessage(content="Check for logical contradictions."),
+            ]
+        )
+        return response.model_dump()
+
+    except Exception as e:
+        print(f"❌ Consistency Check Error: {e}")
+        return {"is_consistent": False, "global_issues": []}

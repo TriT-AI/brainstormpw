@@ -113,6 +113,9 @@ def main():
     )
     st.divider()
 
+    from app.components.global_audit import render_global_feedback
+    render_global_feedback()
+
     render_section_editor()
     render_chat_widget()
 

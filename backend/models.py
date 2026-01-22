@@ -36,6 +36,29 @@ class AuditResponse(BaseModel):
     issues: List[Issue] = Field(default=[], description="List of identified issues.")
 
 
+class GlobalIssue(BaseModel):
+    id: str = Field(description="Unique ID for the logic issue (e.g., 'G-1').")
+    
+    title: str = Field(
+        description="Short title of the logic mismatch (e.g., 'Solution contradicts Problem')."
+    )
+    
+    description: str = Field(
+        description="Detailed explanation of the logical inconsistency found across sections."
+    )
+    
+    related_sections: List[str] = Field(
+        description="List of section names that are involved in this conflict."
+    )
+
+
+class ConsistencyResponse(BaseModel):
+    is_consistent: bool = Field(
+        description="True if the document is logically consistent across all sections."
+    )
+    global_issues: List[GlobalIssue] = Field(default=[], description="List of logical inconsistencies found.")
+
+
 class FixResponse(BaseModel):
     fixed_content: str = Field(
         description="The rewritten content. It must follow the Template Structure but contain the User's original data."

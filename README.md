@@ -17,6 +17,7 @@ This tool helps Project Managers and Quality Assurance teams ensure documentatio
 - **AI Auditing**: Detailed analysis of text against strict criteria (Audit Node).
 - **Severity Scoring**: Categorizes issues as High (Critical), Medium (Partial), or Low (Formatting).
 - **Auto-Fix Agent**: A specialized "Fixer Node" that rewrites content to resolve specific issues while preserving the original context.
+- **Global Consistency Check**: Analyzes the entire document to find logical contradictions between sections.
 - **Interactive UI**: Visual feedback with Bosch-branded styling and real-time state management.
 
 ---
@@ -30,9 +31,11 @@ graph LR
     A[User Input] --> B(Router)
     B -->|Audit Request| C[Auditor Node]
     B -->|Fix Request| D[Fixer Node]
+    B -->|Global Check| H[Consistency Node]
     C --> E[Structured Report]
     D --> F[Rewritten Content]
-    E --> G[UI State Update]
+    H --> G[UI State Update]
+    E --> G
     F --> G
 ```
 
@@ -107,8 +110,10 @@ The application will open in your browser (typically http://localhost:8501).
 3. Audit: Click "🔍 Audit Section". The AI will analyze the text.
 
 4. Review Issues: If issues are found, they will appear in colored alert boxes.
+   
+5. Review Whole Document: Click "✨ Review Document" to check for logical consistency across all sections.
 
-5. Auto-Fix: Click "✨ Auto-Fix" on a specific issue to have the AI rewrite the section for you.
+6. Auto-Fix: Click "✨ Auto-Fix" on a specific issue to have the AI rewrite the section for you.
 
 📂 Project Structure
 
