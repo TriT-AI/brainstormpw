@@ -13,6 +13,7 @@ def initialize_session():
         st.session_state[SESSION_KEY] = {
             "active_template_name": None,
             "sections": [],  # List of section dictionaries
+            "global_result": None,
         }
 
 
@@ -80,6 +81,16 @@ def update_section_audit_result(section_id: str, audit_result: dict):
         section["user_data"]["status"] = (
             "compliant" if audit_result.get("is_compliant") else "flagged"
         )
+
+
+def update_global_audit_result(global_result: dict):
+    """Updates the session state with the whole-document Logic Check results."""
+    st.session_state[SESSION_KEY]["global_result"] = global_result
+
+
+def get_global_audit_result() -> Optional[Dict]:
+    """Retrieves the global consistency check results."""
+    return st.session_state[SESSION_KEY].get("global_result")
 
 
 def clear_workspace():

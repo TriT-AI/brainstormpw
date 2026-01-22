@@ -3,7 +3,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 # Import the Schema and Nodes we created previously
 from backend.models import AgentState
-from backend.graph.nodes import auditor_node, fixer_node
+from backend.graph.nodes import auditor_node, fixer_node, consistency_node
 
 # --- 1. Routing Logic ---
 
@@ -53,3 +53,45 @@ memory = MemorySaver()
 
 # Compile the graph into a runnable application
 graph = workflow.compile(checkpointer=memory)
+
+
+# --- 4. Batch Audit Helper ---
+def run_batch_audit(sections: list) -> dict:
+    """
+    Runs the auditor node for ALL sections sequentially (to avoid rate limits/complexity),
+    and then runs the Consistency Check on the full text.
+    """
+    results_map = {}
+    full_text = []
+
+    # 1. Audit Individual Sections
+    for section in sections:
+        sec_id = section["id"]
+        meta = section["meta"]
+        content = section["user_data"]["content"]
+
+        # Collect text for global check
+        full_text.append(f"SECTION: {meta['title']}\nCONTENT:\n{content}\n")
+
+        # Prepare state for single audit
+        # Note: We can reuse the graph, or just call the auditor_node directly for simplicity and speed
+        # calling node directly avoids state overhead for batch jobs
+        state = {
+            "section_title": meta["title"],
+            "criteria": meta["criteria"],
+            "template_structure": meta["template_structure"],
+            "user_content": content,
+        }
+        
+        # Run Auditor
+        audit_result = auditor_node(state)
+        results_map[sec_id] = audit_result
+
+    # 2. Run Global Consistency Check
+    combined_content = "\n---\n".join(full_text)
+    global_result = consistency_node(combined_content)
+
+    return {
+        "section_results": results_map,
+        "global_result": global_result
+    }
