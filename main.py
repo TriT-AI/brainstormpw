@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -8,8 +9,33 @@ from app.components.section_editor import render_section_editor
 from app.components.chat_overlay import render_chat_widget
 
 # --- 1. CONFIGURATION ---
-# Load environment variables (API keys)
+
+# A. Load environment variables from .env file (For Local Development)
 load_dotenv()
+
+# B. "Secrets Bridge" (Safe for both Local & Cloud)
+# LangChain looks for keys in os.environ. Streamlit Cloud stores them in st.secrets.
+# We wrap this in a try-except block so it doesn't crash locally if secrets.toml is missing.
+try:
+    # Check if secrets exist before accessing them to avoid FileNotFoundError locally
+    if len(st.secrets) > 0:
+        required_keys = [
+            "OPENAI_API_KEY",
+            "OPENAI_BASE_URL",
+            "OPENAI_DEPLOYMENT_NAME",
+            "OPENAI_API_VERSION",
+        ]
+
+        for key in required_keys:
+            if key in st.secrets:
+                os.environ[key] = st.secrets[key]
+except FileNotFoundError:
+    # This happens locally if .streamlit/secrets.toml doesn't exist.
+    # We ignore it because we are using .env locally.
+    pass
+except Exception:
+    # Catch-all for other secrets-related errors
+    pass
 
 # Set Streamlit Page Config
 st.set_page_config(
