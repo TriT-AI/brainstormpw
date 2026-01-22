@@ -5,7 +5,7 @@
 [![LangGraph](https://img.shields.io/badge/LangGraph-Alpha-orange.svg?style=flat)](https://langchain-ai.github.io/langgraph/)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python)](https://www.python.org/)
 
-An intelligent document review system designed to audit Project Charters against specific criteria. Built with **Streamlit** for the frontend and **LangGraph** (powered by Azure OpenAI) for the backend agentic workflow.
+An intelligent document review system designed to audit Project Charters against specific criteria. Built with **Streamlit** for the frontend and **LangGraph** (powered by **OpenAI**) for the backend agentic workflow.
 
 This tool helps Project Managers and Quality Assurance teams ensure documentation compliance by automatically detecting missing information, placeholders, or vague content, and offering an AI-powered "Auto-Fix" capability.
 
@@ -14,7 +14,7 @@ This tool helps Project Managers and Quality Assurance teams ensure documentatio
 ## 🚀 Features
 
 - **Template Management**: Load standard project templates (e.g., Problem Statements, Objectives) or create custom sections.
-- **AI Auditing**: detailed analysis of text against strict criteria (Audit Node).
+- **AI Auditing**: Detailed analysis of text against strict criteria (Audit Node).
 - **Severity Scoring**: Categorizes issues as High (Critical), Medium (Partial), or Low (Formatting).
 - **Auto-Fix Agent**: A specialized "Fixer Node" that rewrites content to resolve specific issues while preserving the original context.
 - **Interactive UI**: Visual feedback with Bosch-branded styling and real-time state management.
@@ -39,9 +39,9 @@ graph LR
 ## 🛠️ Installation & Setup
 
 1. Prerequisites
-   Python 3.10 or higher
 
-Access to Azure OpenAI Service
+   - Python 3.10 or higher
+   - A valid OpenAI API Key (starts with sk-...)
 
 2. Clone the Repository
 
@@ -81,10 +81,9 @@ Ini, TOML
 # .env file
 
 ```
-# Azure OpenAI Configuration
-OPENAI_BASE_URL=[https://your-resource-name.openai.azure.com/openai/v1/](https://your-resource-name.openai.azure.com/openai/v1/)
+# OpenAI Configuration
+OPENAI_BASE_URL=[https://your-resource-name.openai.com/openai/v1/](https://your-resource-name.openai.com/openai/v1/)
 OPENAI_API_KEY=your_actual_api_key_here
-OPENAI_DEPLOYMENT_NAME=gpt-4
 ```
 
 ## 🏃‍♂️ Usage
@@ -94,8 +93,7 @@ Ensure your virtual environment is active.
 Run the Streamlit application:
 
 ```Bash
-
-streamlit run app.py
+streamlit run main.py
 ```
 
 The application will open in your browser (typically http://localhost:8501).
@@ -115,12 +113,21 @@ The application will open in your browser (typically http://localhost:8501).
 📂 Project Structure
 
 ```Plaintext
-
 .
-├── app.py                # Main Streamlit UI entry point
-├── backend_graph.py      # LangGraph logic (Auditor/Fixer nodes)
-├── .env                  # Environment variables (Ignored by Git)
-├── assets/
-│   └── bosch.png         # Logo file
-└── README.md             # Documentation
+├── main.py                  # Main Entry Point (Run this!)
+├── requirements.txt         # Project Dependencies
+├── .gitignore               # Git Ignore file
+├── app/
+│   ├── components/          # UI Widgets (Sidebar, Editor, Chat, Alerts)
+│   └── state_manager.py     # Session State & Data Management
+├── backend/
+│   ├── chat.py              # Chatbot Logic
+│   ├── llm_factory.py       # OpenAI Connection Logic
+│   ├── models.py            # Pydantic Models for Structured Output
+│   ├── prompts.py           # System Prompts for Auditor/Fixer
+│   └── graph/               # LangGraph Workflow
+│       ├── nodes.py         # The Agents (Auditor & Fixer)
+│       └── workflow.py      # The Graph Definition
+└── data/
+    └── template_registry.py # Hardcoded Templates & Criteria
 ```

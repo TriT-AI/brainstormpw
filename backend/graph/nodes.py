@@ -21,7 +21,7 @@ def auditor_node(state: AgentState):
                     "id": "auth_err",
                     "severity": "High",
                     "issue_description": "LLM Credentials Missing",
-                    "recommendation": "Please enter your API Key, Base URL, and Deployment Name in the Sidebar.",
+                    "recommendation": "Please enter your API Key and Model Name in the Sidebar.",
                     "fixable": False,
                 }
             ],

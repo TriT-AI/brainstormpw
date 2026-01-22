@@ -12,31 +12,35 @@ def render_sidebar():
         st.markdown("## 🗂️ Project Workspace")
 
         with st.expander("⚙️ OpenAI Settings", expanded=True):
-            st.caption("Enter your details to enable AI features.")
+            st.caption("Enter your standard OpenAI API Key.")
 
             st.text_input(
                 "API Key",
                 type="password",
                 key="user_api_key",
-                help="Your OpenAI API Key",
+                help="Your sk-... API Key",
             )
+
             st.text_input(
-                "Base URL",
+                "Model Name",
+                key="user_model_name",
+                value="gpt-4o",
+                placeholder="gpt-4o, gpt-4-turbo, etc.",
+                help="The model to use (e.g., gpt-4o)",
+            )
+
+            # Made optional
+            st.text_input(
+                "Base URL (Optional)",
                 key="user_base_url",
-                placeholder="https://your-resource.openai.com/openai/deployments/gpt-4/",
-                help="The full endpoint URL",
-            )
-            st.text_input(
-                "Deployment Name",
-                key="user_deployment_name",
-                placeholder="gpt-4",
-                help="The name of your model deployment",
+                placeholder="Leave empty for standard OpenAI",
+                help="Only required if using a proxy.",
             )
 
             if st.session_state.get("user_api_key"):
                 st.success("Credentials set!")
             else:
-                st.warning("Please enter credentials.")
+                st.warning("Please enter API Key.")
 
         st.divider()
 
