@@ -11,7 +11,7 @@ jobs:
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       OPENAI_MODEL_NAME: ${{ vars.OPENAI_MODEL_NAME || 'gpt-4o' }}
-      OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL || '' }}
+      OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
       STREAMLIT_TEST_PASSWORD: ${{ secrets.STREAMLIT_TEST_PASSWORD }}
       RUN_E2E_TESTS: 'true'
     
@@ -53,6 +53,17 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: |
           playwright install-deps chromium
+
+      - name: Create Streamlit secrets for E2E tests
+        if: ${{ env.STREAMLIT_TEST_PASSWORD != '' }}
+        run: |
+          mkdir -p .streamlit
+          cat > .streamlit/secrets.toml << EOF
+          app_password = "${{ secrets.STREAMLIT_TEST_PASSWORD }}"
+          OPENAI_API_KEY = "${{ secrets.OPENAI_API_KEY }}"
+          OPENAI_MODEL_NAME = "${{ vars.OPENAI_MODEL_NAME || 'gpt-4o' }}"
+          OPENAI_BASE_URL = "${{ secrets.OPENAI_BASE_URL }}"
+          EOF
 
       - name: Run Unit Tests
         run: |
