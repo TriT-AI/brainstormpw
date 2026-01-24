@@ -96,3 +96,38 @@ def get_global_audit_result() -> Optional[Dict]:
 def clear_workspace():
     """Resets the workspace to empty."""
     st.session_state[SESSION_KEY] = {"active_template_name": None, "sections": []}
+
+
+def load_imported_sections_into_state(imported_sections):
+    """
+    Converts the Pydantic models from ingestion.py into the app's dictionary format.
+
+    Args:
+        imported_sections: List of ProjectSection objects from parse_charter_pdf()
+    """
+    new_sections = []
+
+    for sec in imported_sections:
+        new_sections.append(
+            {
+                "id": str(uuid.uuid4()),
+                "meta": {
+                    "title": sec.title,
+                    "criteria": sec.guidance,  # Map "Guidance" to "criteria"
+                    "template_structure": sec.required_format,  # Map "Required Format"
+                },
+                "user_data": {
+                    "content": sec.content,
+                    "last_audit": None,
+                    "status": "draft",
+                },
+            }
+        )
+
+    # Update Session State
+    st.session_state[SESSION_KEY] = {
+        "active_template_name": "Imported PDF",
+        "sections": new_sections,
+        "global_result": None,
+    }
+
