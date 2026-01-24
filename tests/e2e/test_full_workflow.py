@@ -115,7 +115,7 @@ class TestTemplateLoading:
         page = authenticated_page
         
         # Should see sidebar with template selection
-        page.wait_for_selector("text=Template", timeout=5000)
+        page.wait_for_selector("text=Select Template", timeout=5000)
 
     @pytest.mark.e2e
     def test_can_load_template(self, authenticated_page: Page):
