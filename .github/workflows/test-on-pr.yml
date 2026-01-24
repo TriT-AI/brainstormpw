@@ -31,9 +31,27 @@ jobs:
           pip install -r requirements.txt
           pip install -r requirements_dev.txt
 
+      - name: Get Playwright version
+        id: playwright-version
+        run: |
+          echo "version=$(python -c 'import playwright; print(playwright.__version__)')" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: |
           playwright install chromium
+          playwright install-deps chromium
+
+      - name: Install Playwright system deps (if cached)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: |
           playwright install-deps chromium
 
       - name: Run Unit Tests
