@@ -35,7 +35,7 @@ def load_template_into_state(template_name: str):
                     "template_structure": section["template_content"],
                 },
                 "user_data": {
-                    "content": "",  # Start empty so user sees placeholder hint
+                    "content": section.get("example_content", ""),  # Use example content if available
                     "last_audit": None,  # Stores the full AuditResponse dict
                     "status": "draft",  # Options: 'draft', 'compliant', 'flagged'
                 },
