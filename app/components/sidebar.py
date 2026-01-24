@@ -1,10 +1,12 @@
 import streamlit as st
 from app.state_manager import (
     load_template_into_state,
+    load_imported_sections_into_state,
     clear_workspace,
     get_sections,
 )
 from data.template_registry import get_available_templates
+from backend.ingestion import parse_charter_pdf, get_pdf_stats
 
 
 def render_sidebar():
@@ -76,6 +78,46 @@ def render_sidebar():
                 with st.spinner("Loading Template..."):
                     load_template_into_state(selected_template)
                     st.rerun()
+
+        # --- TAB 2: IMPORT PDF ---
+        with st.expander("📂 Import Charter (PDF)", expanded=False):
+            uploaded_file = st.file_uploader(
+                "Upload Project Charter",
+                type=["pdf"],
+                key="pdf_uploader",
+            )
+
+            if uploaded_file and st.button("Process & Load", type="primary", key="process_pdf_btn"):
+                # Check for API Key
+                api_key = st.session_state.get("user_api_key") or st.session_state.get(
+                    "system_api_key"
+                )
+                model_name = st.session_state.get("user_model_name") or st.session_state.get(
+                    "system_model_name", "gpt-4o"
+                )
+                base_url = st.session_state.get("user_base_url") or st.session_state.get(
+                    "system_base_url"
+                )
+
+                if not api_key:
+                    st.error("Please provide an OpenAI API Key first.")
+                else:
+                    with st.spinner("🔍 Reading PDF & Structuring Data..."):
+                        try:
+                            # 1. Parse PDF
+                            sections = parse_charter_pdf(
+                                uploaded_file, api_key, model_name, base_url
+                            )
+
+                            # 2. Load to State
+                            load_imported_sections_into_state(sections)
+
+                            st.success(
+                                f"✅ Charter imported successfully! Found {len(sections)} sections."
+                            )
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Error parsing PDF: {str(e)}")
 
         st.divider()
 

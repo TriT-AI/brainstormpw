@@ -4,3 +4,4 @@ langgraph
 streamlit
 pydantic
 python-dotenv
+markitdown[all]

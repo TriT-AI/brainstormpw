@@ -14,6 +14,7 @@ This tool helps Project Managers and Quality Assurance teams ensure documentatio
 ## 🚀 Features
 
 - **Template Management**: Load standard project templates (e.g., Problem Statements, Objectives) or create custom sections.
+- **PDF Import**: Upload existing Project Charter PDFs and automatically extract structured sections using AI.
 - **Example Charter with "Mistakes"**: Load a pre-filled charter with intentional errors (Missing Info, Contradictions, Formatting issues) to test the AI's capabilities.
 - **AI Auditing**: Detailed analysis of text against strict criteria (Audit Node).
 - **Severity Scoring**: Categorizes issues as High (Critical), Medium (Partial), or Low (Formatting).
@@ -127,6 +128,7 @@ RUN_E2E_TESTS=true python -m pytest tests/acceptance
 
 3. **Workflow**:
    *   **Load Template**: Select **"Example PMBOK Project Charter"** from the sidebar to see a demo with intentional errors.
+   *   **Import PDF**: Click **"📂 Import Charter (PDF)"** to upload an existing charter and extract structured sections.
    *   **Audit**: Click **"🔍 Audit Section"** to see the AI flag missing names and formatting issues.
    *   **Global Check**: Click **"✨ Review Document"** to find logical contradictions.
    *   **Auto-Fix**: Use the magic wand to fix formatting issues automatically.
@@ -143,6 +145,7 @@ RUN_E2E_TESTS=true python -m pytest tests/acceptance
 │   └── state_manager.py     # Session State & Data Management
 ├── backend/
 │   ├── graph/               # LangGraph Workflow & Nodes
+│   ├── ingestion.py         # PDF Import Pipeline (MarkItDown + LLM)
 │   └── chat.py              # Chatbot Logic
 ├── data/
 │   └── template_registry.py # Templates & Criteria (Includes Example Charter)
