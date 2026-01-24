@@ -14,6 +14,7 @@ This tool helps Project Managers and Quality Assurance teams ensure documentatio
 ## 🚀 Features
 
 - **Template Management**: Load standard project templates (e.g., Problem Statements, Objectives) or create custom sections.
+- **Example Charter with "Mistakes"**: Load a pre-filled charter with intentional errors (Missing Info, Contradictions, Formatting issues) to test the AI's capabilities.
 - **AI Auditing**: Detailed analysis of text against strict criteria (Audit Node).
 - **Severity Scoring**: Categorizes issues as High (Critical), Medium (Partial), or Low (Formatting).
 - **Auto-Fix Agent**: A specialized "Fixer Node" that rewrites content to resolve specific issues while preserving the original context.
@@ -49,7 +50,7 @@ graph LR
 2. Clone the Repository
 
 ```Bash
-git clone [https://github.com/your-username/project-charter-auditor.git](https://github.com/your-username/project-charter-auditor.git)
+git clone https://github.com/your-username/project-charter-auditor.git
 cd project-charter-auditor
 ```
 
@@ -69,70 +70,85 @@ source venv/bin/activate
    Create a requirements.txt based on the imports (or use the command below):
 
 ```Bash
-
-pip install streamlit langchain langchain-openai langchain-core langgraph pydantic python-dotenv
+pip install -r requirements.txt
+pip install -r requirements_dev.txt  # For testing
+playwright install  # For E2E tests
 ```
 
 ## ⚙️ Configuration
 
-Create a `.env` file in the root directory. You can copy the structure below.
+### Authentication
+The app is protected by a simple password mechanism. 
+Set the password in `.streamlit/secrets.toml`:
+
+```toml
+app_password = "your-secure-password"
+```
+
+### LLM Credentials
+Create a `.streamlit/secrets.toml` file (or use `.env` if configured) to store your keys securely.
 
 > ⚠️ Security Note: Never commit your actual API keys to GitHub.
 
-Ini, TOML
+```toml
+# .streamlit/secrets.toml
 
-# .env file
-
+[secrets]
+OPENAI_API_KEY = "sk-..."
+OPENAI_MODEL_NAME = "gpt-4o"
 ```
-# OpenAI Configuration
-OPENAI_BASE_URL=[https://your-resource-name.openai.com/openai/v1/](https://your-resource-name.openai.com/openai/v1/)
-OPENAI_API_KEY=your_actual_api_key_here
+
+## 🧪 Testing
+
+This project uses **pytest** for comprehensive testing, including Unit, Functional, and E2E (Playwright) tests.
+
+### Running Tests
+
+```bash
+# Run all tests
+python -m pytest
+
+# Run only functional tests
+python -m pytest tests/functional
+
+# Run E2E Acceptance tests (Requires Playwright browsers)
+# Set RUN_E2E_TESTS=true to enable them
+RUN_E2E_TESTS=true python -m pytest tests/acceptance
 ```
 
 ## 🏃‍♂️ Usage
 
-Ensure your virtual environment is active.
+1. **Start the App**:
+   ```Bash
+   streamlit run main.py
+   ```
 
-Run the Streamlit application:
+2. **Login**: Enter the password configured in `secrets.toml`.
 
-```Bash
-streamlit run main.py
-```
+3. **Workflow**:
+   *   **Load Template**: Select **"Example PMBOK Project Charter"** from the sidebar to see a demo with intentional errors.
+   *   **Audit**: Click **"🔍 Audit Section"** to see the AI flag missing names and formatting issues.
+   *   **Global Check**: Click **"✨ Review Document"** to find logical contradictions.
+   *   **Auto-Fix**: Use the magic wand to fix formatting issues automatically.
 
-The application will open in your browser (typically http://localhost:8501).
-
-### Workflow:
-
-1. Select a Template: Use the sidebar to load "Standard Project Charter".
-
-2. Edit Content: Type directly into the text areas.
-
-3. Audit: Click "🔍 Audit Section". The AI will analyze the text.
-
-4. Review Issues: If issues are found, they will appear in colored alert boxes.
-   
-5. Review Whole Document: Click "✨ Review Document" to check for logical consistency across all sections.
-
-6. Auto-Fix: Click "✨ Auto-Fix" on a specific issue to have the AI rewrite the section for you.
-
-📂 Project Structure
+## 📂 Project Structure
 
 ```Plaintext
 .
-├── main.py                  # Main Entry Point (Run this!)
-├── requirements.txt         # Project Dependencies
-├── .gitignore               # Git Ignore file
+├── main.py                  # Main Entry Point
+├── requirements.txt         # App Dependencies
+├── requirements_dev.txt     # Testing Dependencies
 ├── app/
 │   ├── components/          # UI Widgets (Sidebar, Editor, Chat, Alerts)
 │   └── state_manager.py     # Session State & Data Management
 ├── backend/
-│   ├── chat.py              # Chatbot Logic
-│   ├── llm_factory.py       # OpenAI Connection Logic
-│   ├── models.py            # Pydantic Models for Structured Output
-│   ├── prompts.py           # System Prompts for Auditor/Fixer
-│   └── graph/               # LangGraph Workflow
-│       ├── nodes.py         # The Agents (Auditor & Fixer)
-│       └── workflow.py      # The Graph Definition
-└── data/
-    └── template_registry.py # Hardcoded Templates & Criteria
+│   ├── graph/               # LangGraph Workflow & Nodes
+│   └── chat.py              # Chatbot Logic
+├── data/
+│   └── template_registry.py # Templates & Criteria (Includes Example Charter)
+└── tests/
+    ├── unit/                # Unit Tests
+    ├── functional/          # Functional Tests (State Logic)
+    ├── acceptance/          # E2E Tests (Playwright)
+    └── e2e/                 # Full Workflow Tests
 ```
