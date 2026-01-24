@@ -70,8 +70,12 @@ def authenticated_page(page: Page, streamlit_server: str):
     password_input.fill(test_password)
     password_input.press("Enter")
     
-    # Wait for main app to load
-    page.wait_for_selector("text=Project Charter AI Auditor", timeout=10000)
+    # Wait for Streamlit to process the form and rerun
+    # First wait for network to settle, then check for content
+    page.wait_for_load_state("networkidle", timeout=15000)
+    
+    # Wait for main app title to appear (after authentication completes)
+    page.wait_for_selector("text=Project Charter AI Auditor", timeout=15000)
     
     return page
 
@@ -98,8 +102,8 @@ class TestAppLoading:
         password_input.fill("wrong_password")
         password_input.press("Enter")
         
-        # Should see error message
-        page.wait_for_selector("text=Password incorrect", timeout=5000)
+        # Should see error message (includes emoji in actual app)
+        page.wait_for_selector("text=😕 Password incorrect", timeout=5000)
 
 
 class TestTemplateLoading:

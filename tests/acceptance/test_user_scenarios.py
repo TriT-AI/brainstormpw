@@ -57,7 +57,12 @@ def authenticated_page(page: Page, streamlit_server: str):
     
     password_input.fill(test_password)
     password_input.press("Enter")
-    page.wait_for_selector("text=Project Charter AI Auditor", timeout=10000)
+    
+    # Wait for Streamlit to process the form and rerun
+    page.wait_for_load_state("networkidle", timeout=15000)
+    
+    # Wait for main app title to appear (after authentication completes)
+    page.wait_for_selector("text=Project Charter AI Auditor", timeout=15000)
     
     return page
 
@@ -88,8 +93,11 @@ class TestUserCanCreateProjectCharter:
         password_input.fill(test_password)
         password_input.press("Enter")
         
+        # Wait for Streamlit to process the form and rerun
+        page.wait_for_load_state("networkidle", timeout=15000)
+        
         # Verify successful login
-        page.wait_for_selector("text=Project Charter AI Auditor", timeout=10000)
+        page.wait_for_selector("text=Project Charter AI Auditor", timeout=15000)
         expect(page).to_have_title("Project Charter AI Auditor")
 
     @pytest.mark.acceptance
@@ -175,8 +183,8 @@ class TestErrorHandling:
         password_input.fill("definitely_wrong_password_12345")
         password_input.press("Enter")
         
-        # Should see clear error message
-        error_message = page.locator("text=Password incorrect")
+        # Should see clear error message (includes emoji in actual app)
+        error_message = page.locator("text=😕 Password incorrect")
         expect(error_message).to_be_visible(timeout=5000)
 
 
