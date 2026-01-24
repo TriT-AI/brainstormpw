@@ -127,11 +127,12 @@ RUN_E2E_TESTS=true python -m pytest tests/acceptance
 2. **Login**: Enter the password configured in `secrets.toml`.
 
 3. **Workflow**:
-   *   **Load Template**: Select **"Example PMBOK Project Charter"** from the sidebar to see a demo with intentional errors.
-   *   **Import PDF**: Click **"📂 Import Charter (PDF)"** to upload an existing charter and extract structured sections.
-   *   **Audit**: Click **"🔍 Audit Section"** to see the AI flag missing names and formatting issues.
-   *   **Global Check**: Click **"✨ Review Document"** to find logical contradictions.
-   *   **Auto-Fix**: Use the magic wand to fix formatting issues automatically.
+   *   **Create Document**: Expand **"New Document"** in the sidebar and select a template (e.g., "Example PMBOK Project Charter" with intentional errors).
+   *   **Import PDF**: Expand **"Import Charter"** to upload an existing charter and extract structured sections.
+   *   **Review Section**: Click **"Review"** on any section to see the AI flag issues like missing names or formatting problems.
+   *   **Global Check**: Expand **"Document Consistency"** to find logical contradictions across sections.
+   *   **Auto-Fix**: Click **"Auto-fix"** on fixable issues to let the AI rewrite the content automatically.
+   *   **AI Connection**: Configure API credentials under **Administration → AI Connection** (collapsed by default when system credentials are loaded).
 
 ## 📂 Project Structure
 

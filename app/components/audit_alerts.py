@@ -74,7 +74,7 @@ def render_audit_results(section):
                 # SHOW AUTO-FIX BUTTON
                 # [FIX]: We use on_click callback to safely handle state updates
                 st.button(
-                    "✨ Auto-Fix",
+                    "Auto-fix",
                     key=f"fix_{sec_id}_{issue['id']}",
                     help="AI will rewrite this section to fix the formatting/grammar.",
                     use_container_width=True,
@@ -86,7 +86,7 @@ def render_audit_results(section):
                 # SHOW BLOCKED STATE (Input Required)
                 # Shown when data is missing (e.g. missing name, missing date)
                 st.button(
-                    "⛔ Input Required",
+                    "Input required",
                     key=f"blocked_{sec_id}_{issue['id']}",
                     disabled=True,  # User cannot click this
                     help="You must manually type the missing information (e.g. Names, Dates) before the AI can format it.",

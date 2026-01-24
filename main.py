@@ -34,16 +34,84 @@ def check_password():
     if st.session_state.get("password_correct", False):
         return True
 
-    # Show input for password
-    st.text_input(
-        "Please enter the access password:",
-        type="password",
-        on_change=password_entered,
-        key="password",
+    # --- Enhanced Login Page Styling ---
+    st.markdown(
+        """
+        <style>
+            /* Hide sidebar on login page */
+            [data-testid="stSidebar"] { display: none; }
+            
+            /* Center the login container */
+            .login-container {
+                max-width: 420px;
+                margin: 80px auto 0 auto;
+                padding: 40px;
+                background: linear-gradient(145deg, #ffffff, #f8f9fa);
+                border-radius: 16px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                border: 1px solid #e9ecef;
+            }
+            
+            .login-header {
+                text-align: center;
+                margin-bottom: 32px;
+            }
+            
+            .login-title {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: #1a1a2e;
+                margin: 0 0 8px 0;
+            }
+            
+            .login-subtitle {
+                font-size: 0.95rem;
+                color: #6c757d;
+                margin: 0;
+            }
+            
+            .login-divider {
+                height: 4px;
+                background: linear-gradient(90deg, #942331 0%, #CB1517 25%, #14387F 50%, #0095B3 75%, #00A24C 100%);
+                border-radius: 2px;
+                margin: 24px 0;
+            }
+            
+            .login-footer {
+                text-align: center;
+                margin-top: 24px;
+                font-size: 0.85rem;
+                color: #adb5bd;
+            }
+        </style>
+        
+        <div class="login-container">
+            <div class="login-header">
+                <h1 class="login-title">Project Charter Auditor</h1>
+                <p class="login-subtitle">AI-powered document compliance review</p>
+            </div>
+            <div class="login-divider"></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    if "password_correct" in st.session_state:
-        st.error("😕 Password incorrect")
+    # Create centered columns for the input
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        st.text_input(
+            "Access Password",
+            type="password",
+            on_change=password_entered,
+            key="password",
+            placeholder="Enter your password",
+        )
+
+        if "password_correct" in st.session_state:
+            st.error("Incorrect password. Please try again.")
+        
+        st.caption("Contact your administrator if you need access.")
 
     return False
 

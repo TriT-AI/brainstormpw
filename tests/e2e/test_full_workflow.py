@@ -102,8 +102,8 @@ class TestAppLoading:
         password_input.fill("wrong_password")
         password_input.press("Enter")
         
-        # Should see error message (includes emoji in actual app)
-        page.wait_for_selector("text=😕 Password incorrect", timeout=5000)
+        # Should see error message
+        page.wait_for_selector("text=Incorrect password", timeout=5000)
 
 
 class TestTemplateLoading:
@@ -116,10 +116,10 @@ class TestTemplateLoading:
         
         # Ensure the sidebar is open and "New Document" expander is expanded
         # Streamlit expanders are usually summaries, we need to click it if closed
-        # In sidebar.py: with st.expander("📄 New Document", expanded=False):
+        # In sidebar.py: with st.expander("New Document", expanded=not has_document):
         
         # Open the expander
-        expander = page.locator("summary").filter(has_text="📄 New Document")
+        expander = page.locator("summary").filter(has_text="New Document")
         if expander.is_visible():
             expander.click()
         
@@ -132,7 +132,7 @@ class TestTemplateLoading:
         page = authenticated_page
         
         # Ensure expander is open (idempotent check)
-        expander = page.locator("summary").filter(has_text="📄 New Document")
+        expander = page.locator("summary").filter(has_text="New Document")
         if expander.is_visible():
             # Check if likely closed (this is heuristic in Streamlit's HTML structure)
             # Just clicking it again might toggle it closed if it was open, 

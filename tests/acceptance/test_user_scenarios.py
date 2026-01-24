@@ -183,8 +183,8 @@ class TestErrorHandling:
         password_input.fill("definitely_wrong_password_12345")
         password_input.press("Enter")
         
-        # Should see clear error message (includes emoji in actual app)
-        error_message = page.locator("text=😕 Password incorrect")
+        # Should see clear error message
+        error_message = page.locator("text=Incorrect password")
         expect(error_message).to_be_visible(timeout=5000)
 
 
