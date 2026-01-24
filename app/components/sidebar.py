@@ -11,61 +11,17 @@ from backend.ingestion import parse_charter_pdf, get_pdf_stats
 
 def render_sidebar():
     with st.sidebar:
-        st.markdown("## 🗂️ Project Workspace")
+        st.markdown("## Project Workspace")
 
-        with st.expander("⚙️ OpenAI Settings", expanded=True):
-            # Check if system key is available (loaded from secrets)
-            has_system_key = "system_api_key" in st.session_state
+        # Get sections early to determine default expander states
+        sections = get_sections()
+        has_document = bool(sections)
 
-            if has_system_key:
-                st.success("✅ System Credentials Loaded")
-                key_placeholder = "Using loaded system key..."
-                key_help = "A system key is loaded securely. Type here to override it with your own."
-            else:
-                st.caption("Enter your standard OpenAI API Key.")
-                key_placeholder = "sk-..."
-                key_help = "Your sk-... API Key"
-
-            # 1. API KEY INPUT (Empty by default if system key exists)
-            user_key = st.text_input(
-                "API Key",
-                type="password",
-                key="user_api_key",
-                placeholder=key_placeholder,
-                help=key_help,
-            )
-
-            # 2. MODEL NAME INPUT
-            # Default to system model or gpt-4o
-            default_model = st.session_state.get("system_model_name", "gpt-4o")
-
-            st.text_input(
-                "Model Name",
-                key="user_model_name",
-                value=default_model,
-                placeholder="gpt-4o, gpt-4-turbo, etc.",
-                help="The model to use (e.g., gpt-4o)",
-            )
-
-            # 3. BASE URL (Optional)
-            st.text_input(
-                "Base URL (Optional)",
-                key="user_base_url",
-                placeholder="Leave empty for standard OpenAI",
-                help="Only required if using a proxy.",
-            )
-
-            # VALIDATION FEEDBACK
-            if user_key or has_system_key:
-                # If either user input OR system key is present, we are good
-                pass
-            else:
-                st.warning("Please enter API Key.")
-
-        st.divider()
-
-        # --- TAB 1: CREATE NEW ---
-        with st.expander("📄 New Document", expanded=False):
+        # =================================================================
+        # SECTION 1: CREATE / IMPORT (Primary PM Actions)
+        # =================================================================
+        
+        with st.expander("New Document", expanded=not has_document):
             templates = get_available_templates()
             selected_template = st.selectbox("Select Template", templates)
 
@@ -79,8 +35,7 @@ def render_sidebar():
                     load_template_into_state(selected_template)
                     st.rerun()
 
-        # --- TAB 2: IMPORT PDF ---
-        with st.expander("📂 Import Charter (PDF)", expanded=False):
+        with st.expander("Import Charter", expanded=not has_document):
             uploaded_file = st.file_uploader(
                 "Upload Project Charter",
                 type=["pdf"],
@@ -100,9 +55,9 @@ def render_sidebar():
                 )
 
                 if not api_key:
-                    st.error("Please provide an OpenAI API Key first.")
+                    st.error("Please configure AI connection in the Administration section below.")
                 else:
-                    with st.spinner("🔍 Reading PDF & Structuring Data..."):
+                    with st.spinner("Reading PDF & Structuring Data..."):
                         try:
                             # 1. Parse PDF
                             sections = parse_charter_pdf(
@@ -113,7 +68,7 @@ def render_sidebar():
                             load_imported_sections_into_state(sections)
 
                             st.success(
-                                f"✅ Charter imported successfully! Found {len(sections)} sections."
+                                f"Charter imported successfully! Found {len(sections)} sections."
                             )
                             st.rerun()
                         except Exception as e:
@@ -121,13 +76,14 @@ def render_sidebar():
 
         st.divider()
 
-        # --- TAB 2: HEALTH DASHBOARD (TOC) ---
-        sections = get_sections()
+        # =================================================================
+        # SECTION 2: DOCUMENT HEALTH (Status Dashboard)
+        # =================================================================
 
         if not sections:
-            st.info("👈 Select a template to begin.")
+            st.info("Select a template or import a document to begin.")
         else:
-            st.markdown("### 📊 Document Health")
+            st.markdown("### Document Health")
 
             total = len(sections)
             compliant_count = sum(
@@ -155,7 +111,67 @@ def render_sidebar():
 
         st.divider()
 
-        # --- TAB 3: DANGER ZONE ---
-        if st.button("🗑️ Clear Workspace", use_container_width=True):
-            clear_workspace()
-            st.rerun()
+        # =================================================================
+        # SECTION 3: ADMINISTRATION (Advanced Options - Collapsed)
+        # =================================================================
+        
+        st.caption("Administration")
+
+        with st.expander("AI Connection", expanded=False):
+            # Check if system key is available (loaded from secrets)
+            has_system_key = "system_api_key" in st.session_state
+
+            if has_system_key:
+                st.success("System credentials loaded")
+                
+                # Progressive disclosure: hide full form behind toggle
+                show_advanced = st.checkbox("Show advanced settings", value=False, key="show_ai_advanced")
+                
+                if show_advanced:
+                    st.caption("Override system credentials (optional):")
+                    _render_credential_inputs(
+                        key_placeholder="Using system key...",
+                        key_help="Leave empty to use system key, or enter your own to override."
+                    )
+            else:
+                st.warning("No system key configured. Please enter your credentials.")
+                _render_credential_inputs(
+                    key_placeholder="sk-...",
+                    key_help="Your OpenAI API Key"
+                )
+
+        with st.expander("Workspace Actions", expanded=False):
+            st.caption("Danger zone")
+            if st.button("Clear Workspace", use_container_width=True, type="secondary"):
+                clear_workspace()
+                st.rerun()
+
+
+def _render_credential_inputs(key_placeholder: str, key_help: str):
+    """Helper to render API credential input fields."""
+    # 1. API KEY INPUT
+    st.text_input(
+        "API Key",
+        type="password",
+        key="user_api_key",
+        placeholder=key_placeholder,
+        help=key_help,
+    )
+
+    # 2. MODEL NAME INPUT
+    default_model = st.session_state.get("system_model_name", "gpt-4o")
+    st.text_input(
+        "Model Name",
+        key="user_model_name",
+        value=default_model,
+        placeholder="gpt-4o, gpt-4-turbo, etc.",
+        help="The model to use (e.g., gpt-4o)",
+    )
+
+    # 3. BASE URL (Optional)
+    st.text_input(
+        "Base URL (Optional)",
+        key="user_base_url",
+        placeholder="Leave empty for standard OpenAI",
+        help="Only required if using a proxy.",
+    )

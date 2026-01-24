@@ -39,7 +39,7 @@ def render_chat_widget():
         display: flex;
         align-items: center;
         justify-content: center;
-        animation: pulse-blue 2s infinite;
+        /* animation removed for professional look */
     }
 
     /* --- FIX: Remove default Streamlit button "white box" inside popover trigger --- */
@@ -89,12 +89,7 @@ def render_chat_widget():
         margin-bottom: 10px;
     }
 
-    /* Pulse Animation */
-    @keyframes pulse-blue {
-        0% { box-shadow: 0 0 0 0 rgba(0, 98, 154, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(0, 98, 154, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(0, 98, 154, 0); }
-    }
+    /* Pulse animation removed for subtler appearance */
 
     /* Header Title Styling */
     .chat-header-title {

@@ -30,7 +30,7 @@ def render_section_editor():
         )
         return
 
-    st.subheader(f"📝 Document Editor ({len(sections)} Sections)")
+    st.subheader(f"Document Editor ({len(sections)} Sections)")
 
     # Iterate through sections
     for i, section in enumerate(sections):
