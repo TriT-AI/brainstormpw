@@ -114,6 +114,15 @@ class TestTemplateLoading:
         """Test that template dropdown is visible after login."""
         page = authenticated_page
         
+        # Ensure the sidebar is open and "New Document" expander is expanded
+        # Streamlit expanders are usually summaries, we need to click it if closed
+        # In sidebar.py: with st.expander("📄 New Document", expanded=False):
+        
+        # Open the expander
+        expander = page.locator("summary").filter(has_text="📄 New Document")
+        if expander.is_visible():
+            expander.click()
+        
         # Should see sidebar with template selection
         page.wait_for_selector("text=Select Template", timeout=5000)
 
@@ -122,18 +131,34 @@ class TestTemplateLoading:
         """Test that user can load a template."""
         page = authenticated_page
         
+        # Ensure expander is open (idempotent check)
+        expander = page.locator("summary").filter(has_text="📄 New Document")
+        if expander.is_visible():
+            # Check if likely closed (this is heuristic in Streamlit's HTML structure)
+            # Just clicking it again might toggle it closed if it was open, 
+            # so we should be careful. 
+            # However, for this test sequence, we can assume state or check visibility of inner content.
+            pass
+
+        # Try to find the inner content first
+        template_label = page.locator("text=Select Template")
+        if not template_label.is_visible():
+             expander.click()
+
         # Find and click template dropdown (may vary based on Streamlit version)
         # This is a simplified selector - may need adjustment for actual UI
-        template_section = page.locator("text=Standard Project Charter")
+        # We want to select "Standard Project Charter"
         
-        if template_section.count() > 0:
-            # If already visible, template options are available
-            pass
-        else:
-            # Look for selectbox
-            selectbox = page.locator("[data-testid='stSelectbox']").first
-            if selectbox.count() > 0:
-                selectbox.click()
+        # Look for the selectbox
+        # In recent Streamlit versions, this complex interaction is robust:
+        selectbox = page.locator("[data-testid='stSelectbox']").filter(has_text="Select Template").first
+        if selectbox.count() > 0:
+            selectbox.click()
+            # Select the option
+            page.locator("li").filter(has_text="Standard Project Charter").click()
+            
+            # Click Create button
+            page.get_by_role("button", name="Create from Template").click()
 
 
 class TestSectionEditing:
