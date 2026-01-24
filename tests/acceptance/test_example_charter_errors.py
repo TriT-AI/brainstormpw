@@ -62,7 +62,10 @@ def auth_page(page: Page, streamlit_server_acc: str):
     page.goto(streamlit_server_acc)
     pwd_input = page.locator("input[type='password']")
     pwd_input.wait_for()
-    pwd_input.fill("test_password") # Assumes we set this env var or hardcode for this test env
+    test_password = os.environ.get("STREAMLIT_TEST_PASSWORD")
+    if not test_password:
+        pytest.skip("STREAMLIT_TEST_PASSWORD not set")
+    pwd_input.fill(test_password)
     pwd_input.press("Enter")
     page.wait_for_load_state("networkidle")
     # Wait for title
